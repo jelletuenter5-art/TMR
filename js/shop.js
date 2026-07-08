@@ -55,10 +55,21 @@
     });
   }
 
+  // Tries the live API first (real server). If that's not available — e.g.
+  // this page is hosted on a static host like GitHub Pages, which can't run
+  // the Node server — falls back to reading data/products.json directly, so
+  // browsing and prices still work. Checkout still needs the real server.
   async function fetchProducts() {
-    const res = await fetch("/api/products");
-    if (!res.ok) throw new Error("Kon producten niet laden.");
-    return res.json();
+    try {
+      const res = await fetch("/api/products");
+      const ct = res.headers.get("content-type") || "";
+      if (res.ok && ct.includes("application/json")) return await res.json();
+    } catch (err) {
+      // no live server — fall through to the static fallback below
+    }
+    const res = await fetch("../data/products.json");
+    const catalog = await res.json();
+    return catalog.products.map((p) => ({ ...p, isPlaceholder: Boolean(catalog.pricesArePlaceholder) }));
   }
 
   window.TMRShop = { getCart, saveCart, addToCart, setQty, removeFromCart, cartCount, formatPrice, updateCartBadge, fetchProducts };

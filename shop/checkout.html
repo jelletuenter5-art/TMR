@@ -140,6 +140,13 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ items: cart, customer }),
       });
+      const ct = res.headers.get("content-type") || "";
+      if (!ct.includes("application/json")) {
+        throw new Error(
+          "Afrekenen werkt nog niet op deze preview — deze pagina's staan nu op een statische host zonder server. " +
+          "Draai de site met “npm start” (zie README) om de volledige bestel- en betaalflow te testen."
+        );
+      }
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Er ging iets mis.");
 
