@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Winkelwagen | Tech Medic Respons</title>
+<link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <a href="../index.html" class="brand">
+      <svg class="mark" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Tech Medic Respons logo">
+        <defs><linearGradient id="tmrGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#1E6FA8"/><stop offset="1" stop-color="#C9463B"/>
+        </linearGradient></defs>
+        <rect width="36" height="36" rx="10" fill="url(#tmrGrad)"/>
+        <path d="M5 19H11L13.5 12L17 26L20 19H31" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+      <span class="word">Tech-Medic Respons<span class="sub"><span class="bhv">BHV</span> &amp; <span class="ehbo">EHBO</span> opleidingen</span></span>
+    </a>
+    <nav class="nav-main" aria-label="Hoofdmenu">
+      <ul>
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="../verhuur-evenementen.html">Verhuur hulpverleners</a></li>
+        <li class="has-dropdown">
+          <button class="nav-link" aria-expanded="false">Opleidingen<span class="chev"></span></button>
+          <div class="dropdown">
+            <a href="../opleidingen.html#ehbo">EHBO opleidingen</a>
+            <a href="../opleidingen.html#bhv">BHV opleidingen</a>
+            <a href="../opleidingen.html#instructeur">Instructeursopleidingen</a>
+            <a href="../opleidingen.html#specialistisch">Evenementen, buitensport &amp; watersport</a>
+          </div>
+        </li>
+        <li class="has-dropdown active">
+          <button class="nav-link" aria-expanded="false">Materialen<span class="chev"></span></button>
+          <div class="dropdown">
+            <a href="../materialen.html#verhuur">Verhuur</a>
+            <a href="../materialen.html#verkoop">Verkoop</a>
+            <a href="../materialen.html#onderhoud">Onderhoud</a>
+            <a href="index.html">Webshop</a>
+          </div>
+        </li>
+        <li><a href="../over-ons.html">Over ons</a></li>
+        <li><a href="../nieuws.html">Nieuws</a></li>
+        <li><a href="../contact.html">Contact</a></li>
+      </ul>
+    </nav>
+    <a class="cart-link" href="cart.html">
+      Winkelwagen <span class="badge" data-cart-count>0</span>
+    </a>
+    <button class="nav-toggle" aria-label="Menu openen" aria-expanded="false"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main>
+  <section class="hero compact">
+    <div class="container">
+      <p class="breadcrumb"><a href="../index.html">Home</a> / <a href="index.html">Webshop</a> / Winkelwagen</p>
+      <h1>Winkelwagen</h1>
+    </div>
+  </section>
+
+  <section>
+    <div class="container" id="cart-container">
+      <p>Winkelwagen laden…</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>&copy; 2019–2026 Tech Medic Respons</span>
+      <span>Industrieweg 6B, 1566 JP Assendelft</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../js/script.js"></script>
+<script src="../js/shop.js"></script>
+<script>
+(async function () {
+  const container = document.getElementById("cart-container");
+  const products = await TMRShop.fetchProducts();
+  const productMap = Object.fromEntries(products.map((p) => [p.id, p]));
+
+  function render() {
+    const cart = TMRShop.getCart();
+    if (cart.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <p>Uw winkelwagen is leeg.</p>
+          <a href="index.html" class="btn btn-primary">Naar de webshop</a>
+        </div>`;
+      return;
+    }
+
+    let total = 0;
+    const rows = cart.map((item) => {
+      const p = productMap[item.id];
+      if (!p) return "";
+      const lineTotal = p.priceCents * item.qty;
+      total += lineTotal;
+      return `
+        <tr data-id="${p.id}">
+          <td class="name">${p.name}</td>
+          <td>${TMRShop.formatPrice(p.priceCents)}</td>
+          <td><input type="number" min="1" max="99" value="${item.qty}" data-qty-input></td>
+          <td>${TMRShop.formatPrice(lineTotal)}</td>
+          <td><button class="remove-btn" type="button" data-remove>Verwijderen</button></td>
+        </tr>`;
+    }).join("");
+
+    container.innerHTML = `
+      <table class="cart-table">
+        <thead><tr><th>Product</th><th>Prijs</th><th>Aantal</th><th>Subtotaal</th><th></th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div class="cart-summary">
+        <div class="box">
+          <div class="row total"><span>Totaal</span><span>${TMRShop.formatPrice(total)}</span></div>
+          <a href="checkout.html" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:16px;">Afrekenen</a>
+        </div>
+      </div>`;
+
+    container.querySelectorAll("[data-qty-input]").forEach((input) => {
+      input.addEventListener("change", (e) => {
+        const id = e.target.closest("tr").dataset.id;
+        TMRShop.setQty(id, e.target.value);
+        render();
+      });
+    });
+    container.querySelectorAll("[data-remove]").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const id = e.target.closest("tr").dataset.id;
+        TMRShop.removeFromCart(id);
+        render();
+      });
+    });
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>

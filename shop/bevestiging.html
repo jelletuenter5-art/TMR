@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bestelling bevestigd | Tech Medic Respons</title>
+<link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <a href="../index.html" class="brand">
+      <svg class="mark" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Tech Medic Respons logo">
+        <defs><linearGradient id="tmrGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#1E6FA8"/><stop offset="1" stop-color="#C9463B"/>
+        </linearGradient></defs>
+        <rect width="36" height="36" rx="10" fill="url(#tmrGrad)"/>
+        <path d="M5 19H11L13.5 12L17 26L20 19H31" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+      <span class="word">Tech-Medic Respons<span class="sub"><span class="bhv">BHV</span> &amp; <span class="ehbo">EHBO</span> opleidingen</span></span>
+    </a>
+    <nav class="nav-main" aria-label="Hoofdmenu">
+      <ul>
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="index.html">Webshop</a></li>
+        <li><a href="../contact.html">Contact</a></li>
+      </ul>
+    </nav>
+    <a class="cart-link" href="cart.html">
+      Winkelwagen <span class="badge" data-cart-count>0</span>
+    </a>
+    <button class="nav-toggle" aria-label="Menu openen" aria-expanded="false"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main>
+  <section>
+    <div class="container">
+      <div class="confirmation-box" id="confirmation">Bestelling laden…</div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>&copy; 2019–2026 Tech Medic Respons</span>
+      <span>Industrieweg 6B, 1566 JP Assendelft</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../js/script.js"></script>
+<script src="../js/shop.js"></script>
+<script>
+(async function () {
+  const el = document.getElementById("confirmation");
+  const orderId = new URLSearchParams(window.location.search).get("order");
+  if (!orderId) { el.innerHTML = "<p>Geen bestelling gevonden.</p>"; return; }
+
+  try {
+    const res = await fetch(`/api/orders/${orderId}`);
+    if (!res.ok) throw new Error();
+    const order = await res.json();
+
+    const lines = order.items.map((li) =>
+      `<div class="line"><span>${li.name} × ${li.qty}</span><span>${TMRShop.formatPrice(li.priceCents * li.qty)}</span></div>`
+    ).join("");
+
+    el.innerHTML = `
+      <div class="check">✓</div>
+      <h1>Bedankt voor uw bestelling!</h1>
+      <p style="color:var(--text-muted);margin-bottom:24px;">
+        ${order.testMode ? "Dit is een testbestelling — er is geen echte betaling verwerkt." : "We hebben uw bestelling ontvangen."}
+        Bestelnummer: <strong>${order.id}</strong>
+      </p>
+      <div class="order-summary" style="text-align:left;">
+        ${lines}
+        <div class="line total"><span>Totaal</span><span>${TMRShop.formatPrice(order.totalCents)}</span></div>
+      </div>
+      <p style="margin-top:24px;"><a href="../index.html" class="btn btn-primary">Terug naar de website</a></p>`;
+  } catch (err) {
+    el.innerHTML = "<p>Bestelling kon niet worden geladen.</p>";
+  }
+})();
+</script>
+</body>
+</html>

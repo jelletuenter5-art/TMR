@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Afrekenen | Tech Medic Respons</title>
+<link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <a href="../index.html" class="brand">
+      <svg class="mark" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Tech Medic Respons logo">
+        <defs><linearGradient id="tmrGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#1E6FA8"/><stop offset="1" stop-color="#C9463B"/>
+        </linearGradient></defs>
+        <rect width="36" height="36" rx="10" fill="url(#tmrGrad)"/>
+        <path d="M5 19H11L13.5 12L17 26L20 19H31" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+      <span class="word">Tech-Medic Respons<span class="sub"><span class="bhv">BHV</span> &amp; <span class="ehbo">EHBO</span> opleidingen</span></span>
+    </a>
+    <nav class="nav-main" aria-label="Hoofdmenu">
+      <ul>
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="index.html">Webshop</a></li>
+        <li><a href="cart.html">Winkelwagen</a></li>
+        <li><a href="../contact.html">Contact</a></li>
+      </ul>
+    </nav>
+    <a class="cart-link" href="cart.html">
+      Winkelwagen <span class="badge" data-cart-count>0</span>
+    </a>
+    <button class="nav-toggle" aria-label="Menu openen" aria-expanded="false"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main>
+  <section class="hero compact">
+    <div class="container">
+      <p class="breadcrumb"><a href="../index.html">Home</a> / <a href="index.html">Webshop</a> / <a href="cart.html">Winkelwagen</a> / Afrekenen</p>
+      <h1>Afrekenen</h1>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="checkout-grid">
+        <form id="checkout-form">
+          <div class="form-field">
+            <label for="naam">Naam *</label>
+            <input type="text" id="naam" name="naam" required>
+          </div>
+          <div class="form-field">
+            <label for="email">E-mailadres *</label>
+            <input type="email" id="email" name="email" required>
+          </div>
+          <div class="form-field">
+            <label for="adres">Adres *</label>
+            <input type="text" id="adres" name="adres" required>
+          </div>
+          <div class="form-field">
+            <label for="postcode">Postcode</label>
+            <input type="text" id="postcode" name="postcode">
+          </div>
+          <div class="form-field">
+            <label for="plaats">Plaats</label>
+            <input type="text" id="plaats" name="plaats">
+          </div>
+          <button type="submit" class="btn btn-primary" id="pay-btn">Doorgaan naar betalen</button>
+          <p class="form-note" id="checkout-error" style="color:var(--red-600);"></p>
+        </form>
+
+        <div id="order-summary"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>&copy; 2019–2026 Tech Medic Respons</span>
+      <span>Industrieweg 6B, 1566 JP Assendelft</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../js/script.js"></script>
+<script src="../js/shop.js"></script>
+<script>
+(async function () {
+  const summaryEl = document.getElementById("order-summary");
+  const products = await TMRShop.fetchProducts();
+  const productMap = Object.fromEntries(products.map((p) => [p.id, p]));
+  const cart = TMRShop.getCart();
+
+  if (cart.length === 0) {
+    summaryEl.innerHTML = "";
+    document.querySelector(".checkout-grid").innerHTML = `
+      <div class="empty-state"><p>Uw winkelwagen is leeg.</p><a href="index.html" class="btn btn-primary">Naar de webshop</a></div>`;
+    return;
+  }
+
+  let total = 0;
+  const lines = cart.map((item) => {
+    const p = productMap[item.id];
+    const lineTotal = p.priceCents * item.qty;
+    total += lineTotal;
+    return `<div class="line"><span>${p.name} × ${item.qty}</span><span>${TMRShop.formatPrice(lineTotal)}</span></div>`;
+  }).join("");
+
+  summaryEl.innerHTML = `
+    <div class="order-summary">
+      <h3 style="margin-bottom:14px;">Uw bestelling</h3>
+      ${lines}
+      <div class="line total"><span>Totaal</span><span>${TMRShop.formatPrice(total)}</span></div>
+    </div>`;
+
+  document.getElementById("checkout-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const errorEl = document.getElementById("checkout-error");
+    const payBtn = document.getElementById("pay-btn");
+    errorEl.textContent = "";
+    payBtn.disabled = true;
+    payBtn.textContent = "Bezig…";
+
+    const customer = {
+      naam: document.getElementById("naam").value,
+      email: document.getElementById("email").value,
+      adres: document.getElementById("adres").value,
+      postcode: document.getElementById("postcode").value,
+      plaats: document.getElementById("plaats").value,
+    };
+
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items: cart, customer }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Er ging iets mis.");
+
+      localStorage.removeItem("tmr_cart");
+      window.location.href = data.redirectUrl;
+    } catch (err) {
+      errorEl.textContent = err.message;
+      payBtn.disabled = false;
+      payBtn.textContent = "Doorgaan naar betalen";
+    }
+  });
+})();
+</script>
+</body>
+</html>
