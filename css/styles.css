@@ -135,12 +135,26 @@ section { padding: 72px 0; }
 .brand .mark { width: 36px; height: 36px; flex-shrink: 0; }
 .brand .word { line-height: 1.15; white-space: nowrap; }
 .brand .word .sub { display: block; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: var(--text-muted); white-space: nowrap; }
-.brand-logo { height: 48px; width: auto; border-radius: 8px; flex-shrink: 0; }
+.brand-logo { height: 46px; width: auto; border-radius: 6px; display: block; }
+.brand-logo-chip {
+  display: inline-flex;
+  flex-shrink: 0;
+  padding: 6px;
+  border-radius: 12px;
+  background:
+    linear-gradient(#0a0a0c, #0a0a0c) padding-box,
+    linear-gradient(120deg, var(--red-600), var(--blue-600)) border-box;
+  border: 1.5px solid transparent;
+}
+.footer-brand .brand-logo-chip,
+.footer-brand .brand-logo { height: 56px; }
+.footer-brand .brand-logo-chip { padding: 7px; }
 @media (max-width: 380px) {
   .brand { font-size: 15px; gap: 8px; }
   .brand .mark { width: 30px; height: 30px; }
   .brand .word .sub { font-size: 9.5px; }
-  .brand-logo { height: 40px; }
+  .brand-logo { height: 36px; }
+  .brand-logo-chip { padding: 5px; }
 }
 .brand .word .bhv { color: var(--red-600); }
 .brand .word .ehbo { color: var(--blue-600); }
@@ -244,7 +258,8 @@ li.has-dropdown:hover > .dropdown { opacity: 1; visibility: visible; transform: 
   color: var(--white);
   background: linear-gradient(115deg, var(--ink) 0%, var(--ink-soft) 55%, var(--blue-700) 130%);
   overflow: hidden;
-  border-bottom: 3px solid var(--red-600);
+  border-bottom: 3px solid transparent;
+  border-image: linear-gradient(90deg, var(--red-600), var(--blue-600)) 1;
 }
 .hero::after {
   content: "";
@@ -399,9 +414,9 @@ li.has-dropdown:hover > .dropdown { opacity: 1; visibility: visible; transform: 
 .logo-strip-track { display: flex; flex-wrap: wrap; gap: 16px 20px; align-items: center; justify-content: center; }
 .logo-strip-track .org {
   display: flex; align-items: center; justify-content: center;
-  width: 84px; height: 84px;
+  width: 108px; height: 108px;
   border: 1px solid var(--border); border-radius: var(--radius-md);
-  background: var(--white); padding: 12px;
+  background: var(--white); padding: 14px;
   overflow: hidden;
   transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
 }
@@ -604,6 +619,10 @@ li.has-dropdown:hover > .dropdown { opacity: 1; visibility: visible; transform: 
 
 .photo { border-radius: var(--radius-md); width: 100%; object-fit: cover; box-shadow: var(--shadow-md); }
 .photo.wide { aspect-ratio: 16 / 10; }
+
+/* For ultra-wide banner-shaped source images (product-shot strips) —
+   render at their natural ratio instead of cropping into a portrait box. */
+.photo-natural { display: block; width: 100%; height: auto; border-radius: var(--radius-md); border: 1px solid var(--border); }
 
 /* ---- Utility --------------------------------------------------------------- */
 .text-center { text-align: center; }
