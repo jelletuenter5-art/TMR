@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cursus boeken | Tech Medic Respons</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <a href="index.html" class="brand">
+      <span class="brand-logo-chip"><img src="assets/logo.jpg" alt="Tech Medic Respons" class="brand-logo"></span>
+    </a>
+    <nav class="nav-main" aria-label="Hoofdmenu">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="agenda.html">Cursusagenda</a></li>
+        <li><a href="prijzen.html">Prijzen</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+    <a class="account-link" href="account/login.html" data-account-link="account/">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <span class="label">Inloggen</span>
+    </a>
+    <button class="nav-toggle" aria-label="Menu openen" aria-expanded="false"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main>
+  <section class="hero compact">
+    <div class="container">
+      <p class="breadcrumb"><a href="index.html">Home</a> / <a href="agenda.html">Cursusagenda</a> / Boeken</p>
+      <h1>Cursus boeken</h1>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="checkout-grid" id="booking-grid">
+        <form id="booking-form">
+          <div class="form-field">
+            <label for="naam">Naam *</label>
+            <input type="text" id="naam" name="naam" required>
+          </div>
+          <div class="form-field">
+            <label for="email">E-mailadres *</label>
+            <input type="email" id="email" name="email" required>
+          </div>
+          <div class="form-field">
+            <label for="telefoon">Telefoonnummer</label>
+            <input type="tel" id="telefoon" name="telefoon">
+          </div>
+          <button type="submit" class="btn btn-primary" id="submit-btn">Boeken</button>
+          <p class="form-note" id="booking-error" style="color:var(--red-600);"></p>
+        </form>
+
+        <div id="session-summary"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>&copy; 2019–2026 Tech Medic Respons</span>
+      <span>Industrieweg 6B, 1566 JP Assendelft</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/script.js"></script>
+<script src="js/account.js"></script>
+<script>
+(async function () {
+  const summaryEl = document.getElementById("session-summary");
+  const params = new URLSearchParams(window.location.search);
+  const sessionId = params.get("session");
+
+  function formatPrice(cents) { return "€ " + (cents / 100).toFixed(2).replace(".", ","); }
+
+  async function fetchCourses() {
+    try {
+      const res = await fetch("/api/courses");
+      const ct = res.headers.get("content-type") || "";
+      if (res.ok && ct.includes("application/json")) return await res.json();
+    } catch (err) {}
+    const res = await fetch("data/courses.json");
+    const catalog = await res.json();
+    return catalog.courses.map((c) => ({ ...c, isPlaceholder: Boolean(catalog.pricesArePlaceholder) }));
+  }
+
+  const courses = await fetchCourses();
+  let found = null;
+  for (const course of courses) {
+    const session = course.sessions.find((s) => s.id === sessionId);
+    if (session) { found = { course, session }; break; }
+  }
+
+  if (!sessionId || !found) {
+    document.getElementById("booking-grid").innerHTML =
+      `<div class="empty-state"><p>Deze cursusdatum is niet gevonden.</p><a href="agenda.html" class="btn btn-primary">Naar de cursusagenda</a></div>`;
+    return;
+  }
+
+  const { course, session } = found;
+  const spotsLeft = session.spotsLeft !== undefined ? session.spotsLeft : Math.max(0, session.spotsTotal - session.spotsBooked);
+  const isOnline = course.paymentMode === "online";
+
+  summaryEl.innerHTML = `
+    <div class="order-summary">
+      <h3 style="margin-bottom:14px;">${course.name}</h3>
+      <div class="line"><span>Datum</span><span>${session.date}</span></div>
+      <div class="line"><span>Tijd</span><span>${session.time}</span></div>
+      <div class="line"><span>Locatie</span><span>${session.location}</span></div>
+      <div class="line"><span>Plekken vrij</span><span>${spotsLeft}</span></div>
+      <div class="line total"><span>Prijs</span><span>${formatPrice(course.priceCents)}${course.isPlaceholder ? " *" : ""}</span></div>
+      <p style="font-size:13px;color:var(--text-muted);margin-top:14px;">
+        ${isOnline
+          ? "U betaalt direct online bij het boeken (test-modus: er wordt nu nog niet echt afgeschreven)."
+          : "Dit is een reservering. Wij nemen contact met u op om vereiste certificaten te controleren en de betaling te regelen."}
+      </p>
+    </div>`;
+
+  document.getElementById("submit-btn").textContent = isOnline ? "Boeken en betalen" : "Reservering aanvragen";
+
+  if (window.TMRAccount && TMRAccount.isLoggedIn()) {
+    const customer = await TMRAccount.me();
+    if (customer) {
+      document.getElementById("naam").value = customer.naam || "";
+      document.getElementById("email").value = customer.email || "";
+    }
+  }
+
+  document.getElementById("booking-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const errorEl = document.getElementById("booking-error");
+    const submitBtn = document.getElementById("submit-btn");
+    errorEl.textContent = "";
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Bezig…";
+
+    const customer = {
+      naam: document.getElementById("naam").value,
+      email: document.getElementById("email").value,
+      telefoon: document.getElementById("telefoon").value,
+    };
+
+    try {
+      const res = await fetch("/api/bookings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(window.TMRAccount && TMRAccount.isLoggedIn() ? { Authorization: "Bearer " + TMRAccount.getToken() } : {}),
+        },
+        body: JSON.stringify({ sessionId, customer }),
+      });
+      const ct = res.headers.get("content-type") || "";
+      if (!ct.includes("application/json")) {
+        throw new Error(
+          "Boeken werkt nog niet op deze preview — deze pagina's staan nu op een statische host zonder server. " +
+          "Draai de site met “npm start” (zie README) om de volledige boekings- en betaalflow te testen."
+        );
+      }
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Er ging iets mis.");
+      window.location.href = data.redirectUrl;
+    } catch (err) {
+      errorEl.textContent = err.message;
+      submitBtn.disabled = false;
+      submitBtn.textContent = isOnline ? "Boeken en betalen" : "Reservering aanvragen";
+    }
+  });
+})();
+</script>
+</body>
+</html>

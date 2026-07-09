@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Account aanmaken | Tech Medic Respons</title>
+<link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <a href="../index.html" class="brand">
+      <span class="brand-logo-chip"><img src="../assets/logo.jpg" alt="Tech Medic Respons" class="brand-logo"></span>
+    </a>
+    <nav class="nav-main" aria-label="Hoofdmenu">
+      <ul>
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="../agenda.html">Cursusagenda</a></li>
+        <li><a href="../shop/index.html">Webshop</a></li>
+        <li><a href="../contact.html">Contact</a></li>
+      </ul>
+    </nav>
+    <a class="account-link" href="login.html" data-account-link="">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <span class="label">Inloggen</span>
+    </a>
+    <button class="nav-toggle" aria-label="Menu openen" aria-expanded="false"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main>
+  <section class="hero compact">
+    <div class="container">
+      <p class="breadcrumb"><a href="../index.html">Home</a> / <a href="login.html">Inloggen</a> / Registreren</p>
+      <h1>Account aanmaken</h1>
+      <p class="lead">Sla uw gegevens op voor sneller opnieuw bestellen en boeken. Dit levert geen speciale kortingen op — alleen gemak.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="auth-card">
+        <form id="register-form">
+          <div class="form-field">
+            <label for="naam">Naam *</label>
+            <input type="text" id="naam" name="naam" required>
+          </div>
+          <div class="form-field">
+            <label for="email">E-mailadres *</label>
+            <input type="email" id="email" name="email" required>
+          </div>
+          <div class="form-field">
+            <label for="password">Wachtwoord * <span style="font-weight:400;color:var(--text-muted);">(minimaal 8 tekens)</span></label>
+            <input type="password" id="password" name="password" minlength="8" required>
+          </div>
+          <div class="form-field">
+            <label for="adres">Adres</label>
+            <input type="text" id="adres" name="adres">
+          </div>
+          <div class="form-field">
+            <label for="postcode">Postcode</label>
+            <input type="text" id="postcode" name="postcode">
+          </div>
+          <div class="form-field">
+            <label for="plaats">Plaats</label>
+            <input type="text" id="plaats" name="plaats">
+          </div>
+          <button type="submit" class="btn btn-primary" id="register-btn" style="width:100%;justify-content:center;">Account aanmaken</button>
+          <p class="form-note" id="register-error" style="color:var(--red-600);"></p>
+        </form>
+        <p class="form-note-link">Heeft u al een account? <a href="login.html">Log hier in</a></p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>&copy; 2019–2026 Tech Medic Respons</span>
+      <span>Industrieweg 6B, 1566 JP Assendelft</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../js/script.js"></script>
+<script src="../js/account.js"></script>
+<script>
+(function () {
+  if (window.TMRAccount && TMRAccount.isLoggedIn()) {
+    window.location.href = "account.html";
+    return;
+  }
+  document.getElementById("register-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const errorEl = document.getElementById("register-error");
+    const btn = document.getElementById("register-btn");
+    errorEl.textContent = "";
+    btn.disabled = true;
+    btn.textContent = "Bezig…";
+    try {
+      await TMRAccount.register({
+        naam: document.getElementById("naam").value,
+        email: document.getElementById("email").value,
+        password: document.getElementById("password").value,
+        adres: document.getElementById("adres").value,
+        postcode: document.getElementById("postcode").value,
+        plaats: document.getElementById("plaats").value,
+      });
+      window.location.href = "account.html";
+    } catch (err) {
+      errorEl.textContent = err.message;
+      btn.disabled = false;
+      btn.textContent = "Account aanmaken";
+    }
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mijn account | Tech Medic Respons</title>
+<link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <a href="../index.html" class="brand">
+      <span class="brand-logo-chip"><img src="../assets/logo.jpg" alt="Tech Medic Respons" class="brand-logo"></span>
+    </a>
+    <nav class="nav-main" aria-label="Hoofdmenu">
+      <ul>
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="../agenda.html">Cursusagenda</a></li>
+        <li><a href="../shop/index.html">Webshop</a></li>
+        <li><a href="../contact.html">Contact</a></li>
+      </ul>
+    </nav>
+    <a class="account-link" href="login.html" data-account-link="">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <span class="label">Mijn account</span>
+    </a>
+    <button class="nav-toggle" aria-label="Menu openen" aria-expanded="false"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main>
+  <section class="hero compact">
+    <div class="container">
+      <p class="breadcrumb"><a href="../index.html">Home</a> / Mijn account</p>
+      <h1>Mijn account</h1>
+    </div>
+  </section>
+
+  <section>
+    <div class="container" id="account-root">
+      <p>Account laden…</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>&copy; 2019–2026 Tech Medic Respons</span>
+      <span>Industrieweg 6B, 1566 JP Assendelft</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../js/script.js"></script>
+<script src="../js/account.js"></script>
+<script>
+(async function () {
+  const root = document.getElementById("account-root");
+
+  if (!window.TMRAccount || !TMRAccount.isLoggedIn()) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  const customer = await TMRAccount.me();
+  if (!customer) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  function formatPrice(cents) { return "€ " + (cents / 100).toFixed(2).replace(".", ","); }
+  function statusLabel(status) {
+    return { paid: "Betaald", reserved: "Gereserveerd", pending: "In behandeling" }[status] || status;
+  }
+
+  const [orders, bookings] = await Promise.all([
+    TMRAccount.listOrders().catch(() => []),
+    TMRAccount.listBookings().catch(() => []),
+  ]);
+
+  root.innerHTML = `
+    <div class="account-summary">
+      <div>
+        <strong>${customer.naam}</strong><br>
+        <span style="color:var(--text-muted);font-size:14px;">${customer.email}</span>
+      </div>
+      <button class="btn btn-outline btn-sm" id="logout-btn">Uitloggen</button>
+    </div>
+
+    <div class="split" style="align-items:start;">
+      <div>
+        <h3 style="margin-bottom:16px;">Mijn bestellingen</h3>
+        ${orders.length === 0 ? '<p style="color:var(--text-muted);">Nog geen bestellingen.</p>' : `
+        <div class="history-list">
+          ${orders.map((o) => `
+            <div class="history-row">
+              <div>
+                <strong>${o.items.map((i) => i.name + " ×" + i.qty).join(", ")}</strong>
+                <div class="meta">${new Date(o.createdAt).toLocaleDateString("nl-NL")} · Bestelnummer ${o.id.slice(0, 8)}</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <span>${formatPrice(o.totalCents)}</span>
+                <span class="status-chip status-${o.status}">${statusLabel(o.status)}</span>
+              </div>
+            </div>`).join("")}
+        </div>`}
+
+        <h3 style="margin-bottom:16px;">Mijn cursusboekingen</h3>
+        ${bookings.length === 0 ? '<p style="color:var(--text-muted);">Nog geen boekingen.</p>' : `
+        <div class="history-list">
+          ${bookings.map((b) => `
+            <div class="history-row">
+              <div>
+                <strong>${b.courseName}</strong>
+                <div class="meta">${b.sessionDate} · ${b.location}</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <span>${formatPrice(b.totalCents)}</span>
+                <span class="status-chip status-${b.status}">${statusLabel(b.status)}</span>
+              </div>
+            </div>`).join("")}
+        </div>`}
+      </div>
+
+      <div>
+        <h3 style="margin-bottom:16px;">Mijn gegevens</h3>
+        <form id="details-form">
+          <div class="form-field">
+            <label for="naam">Naam</label>
+            <input type="text" id="naam" name="naam" required value="${customer.naam || ""}">
+          </div>
+          <div class="form-field">
+            <label for="adres">Adres</label>
+            <input type="text" id="adres" name="adres" value="${customer.adres || ""}">
+          </div>
+          <div class="form-field">
+            <label for="postcode">Postcode</label>
+            <input type="text" id="postcode" name="postcode" value="${customer.postcode || ""}">
+          </div>
+          <div class="form-field">
+            <label for="plaats">Plaats</label>
+            <input type="text" id="plaats" name="plaats" value="${customer.plaats || ""}">
+          </div>
+          <button type="submit" class="btn btn-primary" id="save-btn">Gegevens opslaan</button>
+          <p class="form-note" id="save-note"></p>
+        </form>
+      </div>
+    </div>`;
+
+  document.getElementById("logout-btn").addEventListener("click", async () => {
+    await TMRAccount.logout();
+    window.location.href = "../index.html";
+  });
+
+  document.getElementById("details-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const noteEl = document.getElementById("save-note");
+    const btn = document.getElementById("save-btn");
+    btn.disabled = true;
+    btn.textContent = "Bezig…";
+    try {
+      await TMRAccount.updateMe({
+        naam: document.getElementById("naam").value,
+        adres: document.getElementById("adres").value,
+        postcode: document.getElementById("postcode").value,
+        plaats: document.getElementById("plaats").value,
+      });
+      noteEl.style.color = "var(--blue-600)";
+      noteEl.textContent = "Gegevens opgeslagen.";
+    } catch (err) {
+      noteEl.style.color = "var(--red-600)";
+      noteEl.textContent = err.message;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Gegevens opslaan";
+    }
+  });
+})();
+</script>
+</body>
+</html>

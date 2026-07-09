@@ -1,3 +1,6 @@
 node_modules/
 .env
 server/data/orders.json
+server/data/bookings.json
+server/data/customers.json
+server/data/sessions.json

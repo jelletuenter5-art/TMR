@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Boeking bevestigd | Tech Medic Respons</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <a href="index.html" class="brand">
+      <span class="brand-logo-chip"><img src="assets/logo.jpg" alt="Tech Medic Respons" class="brand-logo"></span>
+    </a>
+    <nav class="nav-main" aria-label="Hoofdmenu">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="agenda.html">Cursusagenda</a></li>
+        <li><a href="prijzen.html">Prijzen</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+    <a class="account-link" href="account/login.html" data-account-link="account/">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <span class="label">Inloggen</span>
+    </a>
+    <button class="nav-toggle" aria-label="Menu openen" aria-expanded="false"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main>
+  <section>
+    <div class="container">
+      <div class="confirmation-box" id="confirmation">Boeking laden…</div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>&copy; 2019–2026 Tech Medic Respons</span>
+      <span>Industrieweg 6B, 1566 JP Assendelft</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/script.js"></script>
+<script src="js/account.js"></script>
+<script>
+(async function () {
+  const el = document.getElementById("confirmation");
+  const bookingId = new URLSearchParams(window.location.search).get("booking");
+  if (!bookingId) { el.innerHTML = "<p>Geen boeking gevonden.</p>"; return; }
+
+  function formatPrice(cents) { return "€ " + (cents / 100).toFixed(2).replace(".", ","); }
+
+  try {
+    const res = await fetch(`/api/bookings/${bookingId}`);
+    if (!res.ok) throw new Error();
+    const booking = await res.json();
+
+    const isReservation = booking.paymentMode === "reservation";
+
+    el.innerHTML = `
+      <div class="check">✓</div>
+      <h1>${isReservation ? "Reservering ontvangen!" : "Bedankt voor uw boeking!"}</h1>
+      <p style="color:var(--text-muted);margin-bottom:24px;">
+        ${booking.testMode ? "Dit is een testboeking — er is geen echte betaling verwerkt. " : ""}
+        ${isReservation ? "Wij nemen zo snel mogelijk contact met u op om vereiste certificaten te controleren en de betaling te regelen. " : "We hebben uw boeking ontvangen. "}
+        Boekingsnummer: <strong>${booking.id}</strong>
+      </p>
+      <div class="order-summary" style="text-align:left;">
+        <div class="line"><span>${booking.courseName}</span><span></span></div>
+        <div class="line"><span>Datum</span><span>${booking.sessionDate}</span></div>
+        <div class="line"><span>Tijd</span><span>${booking.sessionTime}</span></div>
+        <div class="line"><span>Locatie</span><span>${booking.location}</span></div>
+        <div class="line total"><span>Prijs</span><span>${formatPrice(booking.totalCents)}</span></div>
+      </div>
+      <p style="margin-top:24px;"><a href="index.html" class="btn btn-primary">Terug naar de website</a></p>`;
+  } catch (err) {
+    el.innerHTML = "<p>Boeking kon niet worden geladen.</p>";
+  }
+})();
+</script>
+</body>
+</html>

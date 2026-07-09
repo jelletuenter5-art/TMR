@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Nieuws | Tech Medic Respons</title>
-<meta name="description" content="Het laatste nieuws van Tech Medic Respons, opleider voor EHBO- en BHV-hulpverleners.">
+<title>Prijzen open inschrijving | Tech Medic Respons</title>
+<meta name="description" content="Prijsoverzicht van onze EHBO- en BHV-cursussen voor open inschrijving — losse aanmelding als individu.">
 <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -18,7 +18,7 @@
       <ul>
         <li><a href="index.html">Home</a></li>
         <li><a href="verhuur-evenementen.html">Verhuur hulpverleners</a></li>
-        <li class="has-dropdown">
+        <li class="has-dropdown active">
           <button class="nav-link" aria-expanded="false">Opleidingen<span class="chev"></span></button>
           <div class="dropdown">
             <a href="opleidingen.html#ehbo">EHBO opleidingen</a>
@@ -38,7 +38,7 @@
           </div>
         </li>
         <li><a href="over-ons.html">Over ons</a></li>
-        <li class="active"><a href="nieuws.html">Nieuws</a></li>
+        <li><a href="nieuws.html">Nieuws</a></li>
         <li><a href="contact.html">Contact</a></li>
       </ul>
     </nav>
@@ -54,33 +54,27 @@
 
   <section class="hero compact">
     <div class="container">
-      <p class="breadcrumb"><a href="index.html">Home</a> / Nieuws</p>
-      <h1>Nieuws</h1>
-      <p class="lead">Het laatste nieuws van Tech Medic Respons.</p>
+      <p class="breadcrumb"><a href="index.html">Home</a> / Prijzen open inschrijving</p>
+      <h1>Prijzen — open inschrijving</h1>
+      <p class="lead">Meld u individueel aan voor een van onderstaande cursussen op een vaste datum en locatie. Liever een training op maat voor uw team, op een moment dat u uitkomt? Dat regelen wij via een offerte.</p>
+      <span class="placeholder-note">Voorbeeldprijzen — definitieve prijzen volgen</span>
     </div>
   </section>
 
-  <div class="photo-banner"><img src="assets/photos/nieuws.jpg" alt=""></div>
-
   <section>
+    <div class="container" id="prijzen-root">
+      <p>Prijzen worden geladen…</p>
+    </div>
+  </section>
+
+  <section class="bg-alt">
     <div class="container">
-      <div class="grid grid-2">
-        <article class="news-card">
-          <img src="assets/nieuws/escape-room.jpg" alt="Mobiele BHV-EHBO Escape Room">
-          <div class="body">
-            <div class="date">10 augustus 2022</div>
-            <h3>Mobiele Escape Room</h3>
-            <p>Het zal u vast niet ontgaan zijn dat wij bezig zijn geweest met het opzetten van een mobiele BHV-EHBO Escape Room. Eindelijk is het zover dat we de Escape Room voor u in kunnen zetten!</p>
-          </div>
-        </article>
-        <article class="news-card">
-          <img src="assets/nieuws/kvbe.png" alt="K.V.B.E. — Koninklijke Vereniging van BHV & EHBO Instructeurs" style="object-fit:contain;background:var(--bg);">
-          <div class="body">
-            <div class="date">31 mei 2020</div>
-            <h3>Corona branche protocol</h3>
-            <p>Van harte gefeliciteerd K.V.B.E. Met dank aan het MKB, VNO-NCW en de nieuw opgerichte branchevereniging KVBE is er een van overheidswege vastgesteld Corona branche protocol beschikbaar voor het verantwoord en veilig aanbieden en volgen van cursussen en examens voor BHV- en EHBO-aanbieders en hun cursisten.</p>
-          </div>
-        </article>
+      <div class="callout">
+        <div>
+          <h3>Training op maat voor uw bedrijf?</h3>
+          <p>In-company EHBO- of BHV-training, op locatie, is al mogelijk vanaf 3 personen — inclusief maatwerkprijs.</p>
+        </div>
+        <a href="contact.html" class="btn btn-accent">Vraag een offerte aan</a>
       </div>
     </div>
   </section>
@@ -106,8 +100,8 @@
         <ul>
           <li><a href="opleidingen.html#ehbo">EHBO opleidingen</a></li>
           <li><a href="opleidingen.html#bhv">BHV opleidingen</a></li>
-          <li><a href="opleidingen.html#instructeur">Instructeursopleidingen</a></li>
-          <li><a href="opleidingen.html#specialistisch">Evenementen &amp; buitensport</a></li>
+          <li><a href="agenda.html">Cursusagenda</a></li>
+          <li><a href="prijzen.html">Prijzen (open inschrijving)</a></li>
         </ul>
       </div>
       <div>
@@ -115,8 +109,7 @@
         <ul>
           <li><a href="verhuur-evenementen.html">Verhuur hulpverleners</a></li>
           <li><a href="materialen.html#verhuur">Verhuur materialen</a></li>
-          <li><a href="materialen.html#verkoop">Verkoop materialen</a></li>
-          <li><a href="materialen.html#onderhoud">Onderhoud materialen</a></li>
+          <li><a href="shop/index.html">Webshop</a></li>
         </ul>
       </div>
       <div>
@@ -138,5 +131,62 @@
 
 <script src="js/script.js"></script>
 <script src="js/account.js"></script>
+<script>
+(async function () {
+  const root = document.getElementById("prijzen-root");
+
+  async function fetchCourses() {
+    try {
+      const res = await fetch("/api/courses");
+      const ct = res.headers.get("content-type") || "";
+      if (res.ok && ct.includes("application/json")) return await res.json();
+    } catch (err) {}
+    const res = await fetch("data/courses.json");
+    const catalog = await res.json();
+    return catalog.courses.map((c) => ({ ...c, isPlaceholder: Boolean(catalog.pricesArePlaceholder) }));
+  }
+
+  function formatPrice(cents) { return "€ " + (cents / 100).toFixed(2).replace(".", ","); }
+
+  const courses = await fetchCourses();
+  const categories = [
+    { key: "ehbo", label: "EHBO opleidingen" },
+    { key: "bhv", label: "BHV opleidingen" },
+    { key: "instructeur", label: "Instructeursopleidingen" },
+    { key: "specialistisch", label: "Evenementen, buitensport & watersport" },
+  ];
+
+  root.innerHTML = categories.map((cat) => {
+    const items = courses.filter((c) => c.category === cat.key);
+    if (items.length === 0) return "";
+    return `
+      <div class="course-group">
+        <div class="course-group-head"><h3>${cat.label}</h3></div>
+        <div class="course-list">
+          ${items.map((c) => {
+            const nextSession = c.sessions.slice().sort((a, b) => a.date.localeCompare(b.date))[0];
+            const payLabel = c.paymentMode === "online" ? "Direct online betalen bij boeken" : "Reservering — betaling in overleg";
+            return `
+            <div class="course-row bookable">
+              <div class="info">
+                <h4>${c.name}</h4>
+                <div class="meta">
+                  <span>Cursusduur: <strong>${c.cursusduur}</strong></span>
+                  <span>Vereisten: <strong>${c.vereisten}</strong></span>
+                </div>
+                <a class="cert-link" href="${c.orgUrl}" target="_blank" rel="noopener">Certificerende organisatie: ${c.org} ↗</a>
+              </div>
+              <div class="actions">
+                <span class="price-pill price-main">${formatPrice(c.priceCents)}${c.isPlaceholder ? " *" : ""}</span>
+                <a class="btn btn-primary btn-sm" href="${nextSession ? "boeken.html?session=" + nextSession.id : "agenda.html"}">Boek deze cursus</a>
+                <span class="pay-mode-note">${payLabel}</span>
+              </div>
+            </div>`;
+          }).join("")}
+        </div>
+      </div>`;
+  }).join("") + '<p style="font-size:13px;color:var(--text-muted);margin-top:8px;">* Voorbeeldprijs, definitieve prijzen volgen.</p>';
+})();
+</script>
 </body>
 </html>

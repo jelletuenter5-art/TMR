@@ -42,6 +42,13 @@ function findByMolliePaymentId(molliePaymentId) {
   return Object.values(orders).find((o) => o.molliePaymentId === molliePaymentId) || null;
 }
 
+function listByEmail(email) {
+  const orders = readAll();
+  return Object.values(orders)
+    .filter((o) => o.customer && o.customer.email && o.customer.email.toLowerCase() === String(email).toLowerCase())
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+}
+
 function updateOrder(id, patch) {
   const orders = readAll();
   if (!orders[id]) return null;
@@ -50,4 +57,4 @@ function updateOrder(id, patch) {
   return orders[id];
 }
 
-module.exports = { createOrder, getOrder, updateOrder, findByMolliePaymentId };
+module.exports = { createOrder, getOrder, updateOrder, findByMolliePaymentId, listByEmail };

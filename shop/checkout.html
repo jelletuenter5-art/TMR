@@ -18,12 +18,18 @@
         <li><a href="../index.html">Home</a></li>
         <li><a href="index.html">Webshop</a></li>
         <li><a href="cart.html">Winkelwagen</a></li>
+        <li><a href="../agenda.html">Cursusagenda</a></li>
+        <li><a href="../prijzen.html">Prijzen</a></li>
         <li><a href="../contact.html">Contact</a></li>
       </ul>
     </nav>
     <a class="cart-link" href="cart.html">
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 3h2l2.4 12.4a2 2 0 0 0 2 1.6h7.2a2 2 0 0 0 2-1.6L20 8H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="20" r="1.4" fill="currentColor"/><circle cx="17" cy="20" r="1.4" fill="currentColor"/></svg>
       <span class="label">Winkelwagen</span> <span class="badge" data-cart-count>0</span>
+    </a>
+    <a class="account-link" href="../account/login.html" data-account-link="../account/">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <span class="label">Inloggen</span>
     </a>
     <button class="nav-toggle" aria-label="Menu openen" aria-expanded="false"><span></span><span></span><span></span></button>
   </div>
@@ -81,6 +87,7 @@
 </footer>
 
 <script src="../js/script.js"></script>
+<script src="../js/account.js"></script>
 <script src="../js/shop.js"></script>
 <script>
 (async function () {
@@ -111,6 +118,17 @@
       <div class="line total"><span>Totaal</span><span>${TMRShop.formatPrice(total)}</span></div>
     </div>`;
 
+  if (window.TMRAccount && TMRAccount.isLoggedIn()) {
+    const customer = await TMRAccount.me();
+    if (customer) {
+      document.getElementById("naam").value = customer.naam || "";
+      document.getElementById("email").value = customer.email || "";
+      document.getElementById("adres").value = customer.adres || "";
+      document.getElementById("postcode").value = customer.postcode || "";
+      document.getElementById("plaats").value = customer.plaats || "";
+    }
+  }
+
   document.getElementById("checkout-form").addEventListener("submit", async (e) => {
     e.preventDefault();
     const errorEl = document.getElementById("checkout-error");
@@ -130,7 +148,10 @@
     try {
       const res = await fetch("/api/checkout", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(window.TMRAccount && TMRAccount.isLoggedIn() ? { Authorization: "Bearer " + TMRAccount.getToken() } : {}),
+        },
         body: JSON.stringify({ items: cart, customer }),
       });
       const ct = res.headers.get("content-type") || "";

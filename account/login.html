@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inloggen | Tech Medic Respons</title>
+<link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <a href="../index.html" class="brand">
+      <span class="brand-logo-chip"><img src="../assets/logo.jpg" alt="Tech Medic Respons" class="brand-logo"></span>
+    </a>
+    <nav class="nav-main" aria-label="Hoofdmenu">
+      <ul>
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="../agenda.html">Cursusagenda</a></li>
+        <li><a href="../shop/index.html">Webshop</a></li>
+        <li><a href="../contact.html">Contact</a></li>
+      </ul>
+    </nav>
+    <a class="account-link" href="login.html" data-account-link="">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <span class="label">Inloggen</span>
+    </a>
+    <button class="nav-toggle" aria-label="Menu openen" aria-expanded="false"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main>
+  <section class="hero compact">
+    <div class="container">
+      <p class="breadcrumb"><a href="../index.html">Home</a> / Inloggen</p>
+      <h1>Inloggen</h1>
+      <p class="lead">Log in als vaste klant voor snellere bestellingen en boekingen: uw gegevens en bestelgeschiedenis staan klaar.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="auth-card">
+        <form id="login-form">
+          <div class="form-field">
+            <label for="email">E-mailadres</label>
+            <input type="email" id="email" name="email" required>
+          </div>
+          <div class="form-field">
+            <label for="password">Wachtwoord</label>
+            <input type="password" id="password" name="password" required>
+          </div>
+          <button type="submit" class="btn btn-primary" id="login-btn" style="width:100%;justify-content:center;">Inloggen</button>
+          <p class="form-note" id="login-error" style="color:var(--red-600);"></p>
+        </form>
+        <p class="form-note-link">Nog geen account? <a href="register.html">Registreer hier</a></p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>&copy; 2019–2026 Tech Medic Respons</span>
+      <span>Industrieweg 6B, 1566 JP Assendelft</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../js/script.js"></script>
+<script src="../js/account.js"></script>
+<script>
+(function () {
+  if (window.TMRAccount && TMRAccount.isLoggedIn()) {
+    window.location.href = "account.html";
+    return;
+  }
+  document.getElementById("login-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const errorEl = document.getElementById("login-error");
+    const btn = document.getElementById("login-btn");
+    errorEl.textContent = "";
+    btn.disabled = true;
+    btn.textContent = "Bezig…";
+    try {
+      await TMRAccount.login({
+        email: document.getElementById("email").value,
+        password: document.getElementById("password").value,
+      });
+      window.location.href = "account.html";
+    } catch (err) {
+      errorEl.textContent = err.message;
+      btn.disabled = false;
+      btn.textContent = "Inloggen";
+    }
+  });
+})();
+</script>
+</body>
+</html>

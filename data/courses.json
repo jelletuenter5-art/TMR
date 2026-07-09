@@ -1,0 +1,190 @@
+{
+  "pricesArePlaceholder": true,
+  "note": "Open inschrijving = losse aanmelding voor 1 persoon, met vaste datum/locatie. In-company maatwerktrainingen blijven offerte-only via opleidingen.html en contact.html. Betaalmodel per cursus: standaard EHBO/BHV-cursussen worden direct online betaald bij het boeken; instructeursopleidingen en specialistische opleidingen zijn reservering-only (TMR controleert vereiste certificaten/vooropleiding en neemt daarna contact op over betaling). Pas 'paymentMode' per cursus aan zodra dit definitief is.",
+  "courses": [
+    {
+      "id": "nikta-reanimatie-aed",
+      "category": "ehbo",
+      "org": "NIKTA",
+      "orgUrl": "https://www.nikta.nl/",
+      "name": "NIKTA Reanimatie + AED",
+      "description": "Leer levensreddend handelen bij een circulatiestilstand en het gebruik van een AED.",
+      "cursusduur": "3 uur",
+      "vereisten": "geen",
+      "priceCents": 8900,
+      "paymentMode": "online",
+      "sessions": [
+        { "id": "nikta-reanimatie-aed-1", "date": "2026-08-12", "time": "09:00–12:00", "location": "Assendelft", "spotsTotal": 10, "spotsBooked": 4 },
+        { "id": "nikta-reanimatie-aed-2", "date": "2026-09-09", "time": "13:00–16:00", "location": "Spijkenisse", "spotsTotal": 10, "spotsBooked": 2 }
+      ]
+    },
+    {
+      "id": "nikta-herhaling-reanimatie-aed",
+      "category": "ehbo",
+      "org": "NIKTA",
+      "orgUrl": "https://www.nikta.nl/",
+      "name": "NIKTA Herhaling Reanimatie + AED",
+      "description": "Jaarlijkse herhaling om uw reanimatie- en AED-vaardigheden op peil te houden.",
+      "cursusduur": "2 uur",
+      "vereisten": "eerder behaald NIKTA Reanimatie + AED-certificaat",
+      "priceCents": 6900,
+      "paymentMode": "online",
+      "sessions": [
+        { "id": "nikta-herhaling-reanimatie-aed-1", "date": "2026-08-19", "time": "19:00–21:00", "location": "Assendelft", "spotsTotal": 12, "spotsBooked": 7 },
+        { "id": "nikta-herhaling-reanimatie-aed-2", "date": "2026-10-07", "time": "19:00–21:00", "location": "Spijkenisse", "spotsTotal": 12, "spotsBooked": 1 }
+      ]
+    },
+    {
+      "id": "nikta-ehbo",
+      "category": "ehbo",
+      "org": "NIKTA",
+      "orgUrl": "https://www.nikta.nl/",
+      "name": "NIKTA EHBO",
+      "description": "Volledige EHBO-opleiding voor volwassenen, inclusief reanimatie en AED.",
+      "cursusduur": "20 uur",
+      "vereisten": "geen",
+      "priceCents": 24900,
+      "paymentMode": "online",
+      "sessions": [
+        { "id": "nikta-ehbo-1", "date": "2026-09-01", "time": "09:00–17:00 (2 dagen)", "location": "Assendelft", "spotsTotal": 8, "spotsBooked": 5 },
+        { "id": "nikta-ehbo-2", "date": "2026-11-03", "time": "09:00–17:00 (2 dagen)", "location": "Spijkenisse", "spotsTotal": 8, "spotsBooked": 0 }
+      ]
+    },
+    {
+      "id": "nikta-ehbo-herhaling",
+      "category": "ehbo",
+      "org": "NIKTA",
+      "orgUrl": "https://www.nikta.nl/",
+      "name": "NIKTA EHBO Herhaling",
+      "description": "Jaarlijkse herhaling van de NIKTA EHBO-opleiding.",
+      "cursusduur": "8 uur",
+      "vereisten": "geen",
+      "priceCents": 14900,
+      "paymentMode": "online",
+      "sessions": [
+        { "id": "nikta-ehbo-herhaling-1", "date": "2026-08-26", "time": "09:00–17:00", "location": "Assendelft", "spotsTotal": 10, "spotsBooked": 3 }
+      ]
+    },
+    {
+      "id": "nikta-ehbo-kinderen-zuigelingen",
+      "category": "ehbo",
+      "org": "NIKTA",
+      "orgUrl": "https://www.nikta.nl/",
+      "name": "NIKTA EHBO Kinderen en zuigelingen + AED",
+      "description": "EHBO gericht op kinderen en zuigelingen, inclusief reanimatie en AED.",
+      "cursusduur": "8 uur",
+      "vereisten": "EHBO-certificaat volwassenen & kinderen, niet ouder dan 12 maanden",
+      "priceCents": 17900,
+      "paymentMode": "online",
+      "sessions": [
+        { "id": "nikta-ehbo-kinderen-zuigelingen-1", "date": "2026-09-16", "time": "09:00–17:00", "location": "Spijkenisse", "spotsTotal": 10, "spotsBooked": 6 }
+      ]
+    },
+    {
+      "id": "nikta-bhv",
+      "category": "bhv",
+      "org": "NIKTA",
+      "orgUrl": "https://www.nikta.nl/",
+      "name": "NIKTA BHV",
+      "description": "Basisopleiding bedrijfshulpverlening: brand, ontruiming en levensreddende eerste hulp.",
+      "cursusduur": "8 uur",
+      "vereisten": "geen",
+      "priceCents": 21900,
+      "paymentMode": "online",
+      "sessions": [
+        { "id": "nikta-bhv-1", "date": "2026-08-14", "time": "09:00–17:00", "location": "Assendelft", "spotsTotal": 12, "spotsBooked": 9 },
+        { "id": "nikta-bhv-2", "date": "2026-10-16", "time": "09:00–17:00", "location": "Spijkenisse", "spotsTotal": 12, "spotsBooked": 2 }
+      ]
+    },
+    {
+      "id": "nikta-herhaling-bhv",
+      "category": "bhv",
+      "org": "NIKTA",
+      "orgUrl": "https://www.nikta.nl/",
+      "name": "NIKTA Herhaling BHV",
+      "description": "Jaarlijkse herhaling van de NIKTA BHV-opleiding.",
+      "cursusduur": "8 uur",
+      "vereisten": "NIKTA BHV",
+      "priceCents": 14900,
+      "paymentMode": "online",
+      "sessions": [
+        { "id": "nikta-herhaling-bhv-1", "date": "2026-08-28", "time": "09:00–17:00", "location": "Assendelft", "spotsTotal": 12, "spotsBooked": 5 }
+      ]
+    },
+    {
+      "id": "nibhv-bhv",
+      "category": "bhv",
+      "org": "NIBHV",
+      "orgUrl": "https://www.nibhv.nl/",
+      "name": "NIBHV BHV",
+      "description": "Erkende NIBHV-basisopleiding bedrijfshulpverlening.",
+      "cursusduur": "16 uur",
+      "vereisten": "geen",
+      "priceCents": 26900,
+      "paymentMode": "online",
+      "sessions": [
+        { "id": "nibhv-bhv-1", "date": "2026-09-22", "time": "09:00–17:00 (2 dagen)", "location": "Spijkenisse", "spotsTotal": 10, "spotsBooked": 3 }
+      ]
+    },
+    {
+      "id": "nikta-instructeur-boc",
+      "category": "instructeur",
+      "org": "NIKTA",
+      "orgUrl": "https://www.nikta.nl/",
+      "name": "NIKTA Instructeur (BOC)",
+      "description": "Word zelf NIKTA-instructeur en geef straks uw eigen BHV/EHBO-trainingen.",
+      "cursusduur": "32 uur",
+      "vereisten": "geen",
+      "priceCents": 64900,
+      "paymentMode": "reservation",
+      "sessions": [
+        { "id": "nikta-instructeur-boc-1", "date": "2026-10-05", "time": "09:00–17:00 (4 dagen)", "location": "Assendelft", "spotsTotal": 6, "spotsBooked": 2 }
+      ]
+    },
+    {
+      "id": "efr-instructeur-ehbo",
+      "category": "instructeur",
+      "org": "EFR",
+      "orgUrl": "https://www.emergencyfirstresponse.com/",
+      "name": "EFR Instructeur EHBO",
+      "description": "Word EFR-instructeur en geef geaccrediteerde EFR EHBO-trainingen.",
+      "cursusduur": "16 uur",
+      "vereisten": "EHBO-certificaat volwassenen & kinderen, niet ouder dan 12 maanden",
+      "priceCents": 54900,
+      "paymentMode": "reservation",
+      "sessions": [
+        { "id": "efr-instructeur-ehbo-1", "date": "2026-11-09", "time": "09:00–17:00 (2 dagen)", "location": "Spijkenisse", "spotsTotal": 6, "spotsBooked": 1 }
+      ]
+    },
+    {
+      "id": "nikta-sport-ehbo",
+      "category": "specialistisch",
+      "org": "NIKTA",
+      "orgUrl": "https://www.nikta.nl/",
+      "name": "NIKTA Sport EHBO",
+      "description": "Specialistische EHBO-opleiding voor letsels en incidenten bij buitensport.",
+      "cursusduur": "op aanvraag",
+      "vereisten": "certificaat EHBO",
+      "priceCents": 32900,
+      "paymentMode": "reservation",
+      "sessions": [
+        { "id": "nikta-sport-ehbo-1", "date": "2026-09-26", "time": "09:00–17:00", "location": "Assendelft", "spotsTotal": 8, "spotsBooked": 3 }
+      ]
+    },
+    {
+      "id": "nikta-mop",
+      "category": "specialistisch",
+      "org": "NIKTA",
+      "orgUrl": "https://www.nikta.nl/",
+      "name": "NIKTA MOP",
+      "description": "Specialistische EHBO-opleiding voor watersportongevallen.",
+      "cursusduur": "op aanvraag",
+      "vereisten": "certificaat EHBO",
+      "priceCents": 32900,
+      "paymentMode": "reservation",
+      "sessions": [
+        { "id": "nikta-mop-1", "date": "2026-10-24", "time": "09:00–17:00", "location": "Spijkenisse", "spotsTotal": 8, "spotsBooked": 0 }
+      ]
+    }
+  ]
+}
