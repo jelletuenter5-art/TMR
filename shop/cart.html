@@ -99,26 +99,27 @@
     }
 
     let total = 0;
-    const rows = cart.map((item) => {
+    const items = cart.map((item) => {
       const p = productMap[item.id];
       if (!p) return "";
       const lineTotal = p.priceCents * item.qty;
       total += lineTotal;
       return `
-        <tr data-id="${p.id}">
-          <td class="name">${p.name}</td>
-          <td>${TMRShop.formatPrice(p.priceCents)}</td>
-          <td><input type="number" min="1" max="99" value="${item.qty}" data-qty-input></td>
-          <td>${TMRShop.formatPrice(lineTotal)}</td>
-          <td><button class="remove-btn" type="button" data-remove>Verwijderen</button></td>
-        </tr>`;
+        <div class="cart-item" data-id="${p.id}">
+          <div class="cart-item-main">
+            <h4>${p.name}</h4>
+            <button class="remove-btn" type="button" data-remove>Verwijderen</button>
+          </div>
+          <div class="cart-item-meta">
+            <span>${TMRShop.formatPrice(p.priceCents)} per stuk</span>
+            <label class="qty-field">Aantal <input type="number" min="1" max="99" value="${item.qty}" data-qty-input></label>
+            <span class="line-total">${TMRShop.formatPrice(lineTotal)}</span>
+          </div>
+        </div>`;
     }).join("");
 
     container.innerHTML = `
-      <table class="cart-table">
-        <thead><tr><th>Product</th><th>Prijs</th><th>Aantal</th><th>Subtotaal</th><th></th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table>
+      <div class="cart-list">${items}</div>
       <div class="cart-summary">
         <div class="box">
           <div class="row total"><span>Totaal</span><span>${TMRShop.formatPrice(total)}</span></div>
@@ -128,14 +129,14 @@
 
     container.querySelectorAll("[data-qty-input]").forEach((input) => {
       input.addEventListener("change", (e) => {
-        const id = e.target.closest("tr").dataset.id;
+        const id = e.target.closest(".cart-item").dataset.id;
         TMRShop.setQty(id, e.target.value);
         render();
       });
     });
     container.querySelectorAll("[data-remove]").forEach((btn) => {
       btn.addEventListener("click", (e) => {
-        const id = e.target.closest("tr").dataset.id;
+        const id = e.target.closest(".cart-item").dataset.id;
         TMRShop.removeFromCart(id);
         render();
       });
