@@ -34,7 +34,7 @@ server, since the shop requires the backend to be running.
   `"reservation"` — adjust per course as needed.
 - Bookings are stored in `server/data/bookings.json` (created automatically,
   not committed to git).
-- Pages: `agenda.html` (upcoming sessions), `prijzen.html` (price list),
+- Pages: `agenda.html` (price list + upcoming sessions per course, combined),
   `boeken.html` (booking form), `boeking-bevestiging.html` (confirmation).
 
 ## Klantaccounts (vaste klanten)

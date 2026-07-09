@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cursusagenda — boek uw opleiding | Tech Medic Respons</title>
-<meta name="description" content="Bekijk de eerstvolgende data van onze EHBO- en BHV-cursussen voor open inschrijving en boek direct uw plek.">
+<title>Cursusagenda &amp; prijzen — open inschrijving | Tech Medic Respons</title>
+<meta name="description" content="Prijzen en eerstvolgende lesdata van onze EHBO- en BHV-cursussen voor open inschrijving — kies een datum en boek direct uw plek.">
 <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -25,8 +25,7 @@
             <a href="opleidingen.html#bhv">BHV opleidingen</a>
             <a href="opleidingen.html#instructeur">Instructeursopleidingen</a>
             <a href="opleidingen.html#specialistisch">Evenementen, buitensport &amp; watersport</a>
-            <a href="agenda.html">Cursusagenda</a>
-            <a href="prijzen.html">Prijzen (open inschrijving)</a>
+            <a href="agenda.html">Cursusagenda &amp; prijzen</a>
           </div>
         </li>
         <li class="has-dropdown">
@@ -54,16 +53,16 @@
 
   <section class="hero compact">
     <div class="container">
-      <p class="breadcrumb"><a href="index.html">Home</a> / Cursusagenda</p>
-      <h1>Cursusagenda</h1>
-      <p class="lead">De eerstvolgende lesdata voor onze cursussen met open inschrijving — voor losse aanmelding als individu. Kies een datum en boek direct uw plek.</p>
-      <span class="placeholder-note">Voorbeelddata &amp; -prijzen — definitieve planning volgt</span>
+      <p class="breadcrumb"><a href="index.html">Home</a> / Cursusagenda &amp; prijzen</p>
+      <h1>Cursusagenda &amp; prijzen</h1>
+      <p class="lead">Prijzen en eerstvolgende lesdata van onze cursussen met open inschrijving — voor losse aanmelding als individu. Kies een cursus, kies een datum en boek direct uw plek.</p>
+      <span class="placeholder-note">Voorbeeldprijzen &amp; -data — definitieve planning volgt</span>
     </div>
   </section>
 
   <section>
     <div class="container" id="agenda-root">
-      <p>Agenda wordt geladen…</p>
+      <p>Wordt geladen…</p>
     </div>
   </section>
 
@@ -100,8 +99,7 @@
         <ul>
           <li><a href="opleidingen.html#ehbo">EHBO opleidingen</a></li>
           <li><a href="opleidingen.html#bhv">BHV opleidingen</a></li>
-          <li><a href="agenda.html">Cursusagenda</a></li>
-          <li><a href="prijzen.html">Prijzen (open inschrijving)</a></li>
+          <li><a href="agenda.html">Cursusagenda &amp; prijzen</a></li>
         </ul>
       </div>
       <div>
@@ -149,25 +147,7 @@
   const monthNames = ["jan", "feb", "mrt", "apr", "mei", "jun", "jul", "aug", "sep", "okt", "nov", "dec"];
   function formatPrice(cents) { return "€ " + (cents / 100).toFixed(2).replace(".", ","); }
 
-  const courses = await fetchCourses();
-
-  // Flatten to sessions, sorted by date, and only keep future sessions.
-  const today = new Date().toISOString().slice(0, 10);
-  const rows = [];
-  courses.forEach((course) => {
-    course.sessions.forEach((session) => {
-      if (session.date < today) return;
-      rows.push({ course, session });
-    });
-  });
-  rows.sort((a, b) => a.session.date.localeCompare(b.session.date));
-
-  if (rows.length === 0) {
-    root.innerHTML = "<p>Er staan op dit moment geen lesdata gepland. Neem contact met ons op voor de mogelijkheden.</p>";
-    return;
-  }
-
-  root.innerHTML = `<div class="session-list">${rows.map(({ course, session }) => {
+  function sessionRow(course, session) {
     const d = new Date(session.date + "T00:00:00");
     const spotsLeft = session.spotsLeft !== undefined ? session.spotsLeft : Math.max(0, session.spotsTotal - session.spotsBooked);
     let spotsLabel = `${spotsLeft} plekken vrij`;
@@ -179,17 +159,56 @@
       <div class="session-row">
         <div class="date-chip"><span class="day">${d.getDate()}</span><span class="month">${monthNames[d.getMonth()]}</span></div>
         <div class="info">
-          <h4>${course.name}</h4>
-          <div class="meta">
-            <span>${session.time}</span>
-            <span>${session.location}</span>
-            <span class="${spotsClass}">${spotsLabel}</span>
-            <span>${formatPrice(course.priceCents)}${course.isPlaceholder ? " (voorbeeldprijs)" : ""}</span>
-          </div>
+          <h4 style="font-size:14.5px;">${session.time} · ${session.location}</h4>
+          <div class="meta"><span class="${spotsClass}">${spotsLabel}</span></div>
         </div>
         <a class="btn ${spotsLeft === 0 ? "btn-outline" : "btn-primary"} btn-sm" href="${spotsLeft === 0 ? "#" : "boeken.html?session=" + session.id}"${spotsLeft === 0 ? " aria-disabled=\"true\" onclick=\"return false;\"" : ""}>${spotsLeft === 0 ? "Vol" : "Boeken"}</a>
       </div>`;
-  }).join("")}</div>`;
+  }
+
+  const courses = await fetchCourses();
+  const today = new Date().toISOString().slice(0, 10);
+  const categories = [
+    { key: "ehbo", label: "EHBO opleidingen" },
+    { key: "bhv", label: "BHV opleidingen" },
+    { key: "instructeur", label: "Instructeursopleidingen" },
+    { key: "specialistisch", label: "Evenementen, buitensport & watersport" },
+  ];
+
+  root.innerHTML = categories.map((cat) => {
+    const items = courses.filter((c) => c.category === cat.key);
+    if (items.length === 0) return "";
+    return `
+      <div class="course-group">
+        <div class="course-group-head"><h3>${cat.label}</h3></div>
+        ${items.map((c) => {
+          const futureSessions = c.sessions.filter((s) => s.date >= today).sort((a, b) => a.date.localeCompare(b.date));
+          const payLabel = c.paymentMode === "online" ? "Direct online betalen bij boeken" : "Reservering — betaling in overleg";
+          return `
+          <div class="agenda-course">
+            <div class="agenda-course-head">
+              <div class="info">
+                <h4>${c.name}</h4>
+                <div class="meta">
+                  <span>Cursusduur: <strong>${c.cursusduur}</strong></span>
+                  <span>Vereisten: <strong>${c.vereisten}</strong></span>
+                </div>
+                <a class="cert-link" href="${c.orgUrl}" target="_blank" rel="noopener">Certificerende organisatie: ${c.org} ↗</a>
+              </div>
+              <div class="actions">
+                <span class="price-pill price-main">${formatPrice(c.priceCents)}${c.isPlaceholder ? " *" : ""}</span>
+                <span class="pay-mode-note">${payLabel}</span>
+              </div>
+            </div>
+            <div class="session-list">
+              ${futureSessions.length > 0
+                ? futureSessions.map((s) => sessionRow(c, s)).join("")
+                : '<p style="padding:16px 24px;color:var(--text-muted);font-size:14px;">Geen geplande data op dit moment — <a href="contact.html">neem contact op</a> voor de mogelijkheden.</p>'}
+            </div>
+          </div>`;
+        }).join("")}
+      </div>`;
+  }).join("") + '<p style="font-size:13px;color:var(--text-muted);margin-top:8px;">* Voorbeeldprijs, definitieve prijzen volgen.</p>';
 })();
 </script>
 </body>
