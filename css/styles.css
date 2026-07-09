@@ -24,7 +24,7 @@
   --radius-pill: 999px;
   --shadow-sm: 0 1px 3px rgba(18, 24, 31, 0.06), 0 1px 2px rgba(18, 24, 31, 0.04);
   --shadow-md: 0 8px 24px rgba(18, 24, 31, 0.08);
-  --header-h: 76px;
+  --header-h: 84px;
 }
 
 /* ---- Reset ------------------------------------------------------------ */
@@ -135,26 +135,29 @@ section { padding: 72px 0; }
 .brand .mark { width: 36px; height: 36px; flex-shrink: 0; }
 .brand .word { line-height: 1.15; white-space: nowrap; }
 .brand .word .sub { display: block; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: var(--text-muted); white-space: nowrap; }
-.brand-logo { height: 46px; width: auto; border-radius: 6px; display: block; }
+.brand-logo { height: 62px; width: auto; border-radius: 7px; display: block; }
 .brand-logo-chip {
   display: inline-flex;
   flex-shrink: 0;
-  padding: 6px;
-  border-radius: 12px;
+  padding: 5px;
+  border-radius: 13px;
   background:
     linear-gradient(#0a0a0c, #0a0a0c) padding-box,
     linear-gradient(120deg, var(--red-600), var(--blue-600)) border-box;
   border: 1.5px solid transparent;
 }
 .footer-brand .brand-logo-chip,
-.footer-brand .brand-logo { height: 56px; }
-.footer-brand .brand-logo-chip { padding: 7px; }
+.footer-brand .brand-logo { height: 64px; }
+.footer-brand .brand-logo-chip { padding: 6px; }
+@media (max-width: 480px) {
+  .brand-logo { height: 46px; }
+}
 @media (max-width: 380px) {
   .brand { font-size: 15px; gap: 8px; }
   .brand .mark { width: 30px; height: 30px; }
   .brand .word .sub { font-size: 9.5px; }
-  .brand-logo { height: 36px; }
-  .brand-logo-chip { padding: 5px; }
+  .brand-logo { height: 40px; }
+  .brand-logo-chip { padding: 4px; }
 }
 .brand .word .bhv { color: var(--red-600); }
 .brand .word .ehbo { color: var(--blue-600); }
@@ -325,7 +328,6 @@ li.has-dropdown:hover > .dropdown { opacity: 1; visibility: visible; transform: 
   margin-bottom: 18px;
 }
 .card .icon svg { width: 22px; height: 22px; }
-.card:nth-of-type(2) .icon { background: var(--red-100); color: var(--red-600); }
 .card h3 { font-size: 18px; margin-bottom: 8px; }
 .card p { color: var(--text-muted); font-size: 15px; margin-bottom: 0; }
 .card a.card-link { color: var(--blue-600); font-weight: 700; font-size: 14.5px; margin-top: 14px; display: inline-block; }
